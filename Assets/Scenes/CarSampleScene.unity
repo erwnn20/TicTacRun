@@ -438,7 +438,6 @@ GameObject:
   - component: {fileID: 1629858156}
   - component: {fileID: 1629858158}
   - component: {fileID: 1629858157}
-  - component: {fileID: 1629858159}
   m_Layer: 0
   m_Name: Car
   m_TagString: Untagged
@@ -455,7 +454,7 @@ Transform:
   m_GameObject: {fileID: 1629858151}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 500, y: 0.25, z: 500}
+  m_LocalPosition: {x: 0, y: 0.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -506,7 +505,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61e722685156f6345a87a25b71f53a58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  input: {fileID: 1629858158}
   throttleWheels:
   - {fileID: 7804597942997956553}
   - {fileID: 8998641211535195566}
@@ -538,27 +536,6 @@ MonoBehaviour:
   throttle: 0
   steer: 0
   handBrake: 0
---- !u!65 &1629858159
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1629858151}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 1.2128296, y: 0.27817702, z: 2.5917053}
-  m_Center: {x: 0.013885498, y: 0.2220993, z: 0.000015258789}
 --- !u!1 &1957626063
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,7 +623,7 @@ Transform:
   m_GameObject: {fileID: 1957626063}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -500, y: 0, z: -500}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
