@@ -8,13 +8,9 @@ public class CarController : MonoBehaviour
     [SerializeField] private List<WheelCollider> brakeWheels;
     [SerializeField] private List<WheelCollider> steeringWheels;
 
-    [SerializeField] private float maxMotorTorque = 1250f;
-    [SerializeField] private float maxBrakePower = 1500f;
+    [SerializeField] private CarValues data;
 
-    [SerializeField] private float maxDecelerationTorque = 1000f;
     [SerializeField] private float speedThreshold = 15f;
-
-    [SerializeField] private float maxTrunAxis = 20f;
 
     private Rigidbody _rb;
     private CarInputManager _input;
@@ -31,6 +27,7 @@ public class CarController : MonoBehaviour
         {
             case > 0 when IsMovingForward() || !IsMoving():
             case < 0 when IsMovingBackward() || !IsMoving():
+                Debug.Log("acc");
                 Throttle(_input.throttle);
                 Brake(0);
                 break;
