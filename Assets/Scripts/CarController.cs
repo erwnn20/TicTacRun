@@ -10,8 +10,6 @@ public class CarController : MonoBehaviour
 
     [SerializeField] private CarValues data;
 
-    [SerializeField] private float speedThreshold = 15f;
-
     private Rigidbody _rb;
     private CarInputManager _input;
 
@@ -27,7 +25,6 @@ public class CarController : MonoBehaviour
         {
             case > 0 when IsMovingForward() || !IsMoving():
             case < 0 when IsMovingBackward() || !IsMoving():
-                Debug.Log("acc");
                 Throttle(_input.throttle);
                 Brake(0);
                 break;
@@ -48,8 +45,6 @@ public class CarController : MonoBehaviour
         if (_input.handBrake) Brake(1);
 
         steeringWheels.ForEach(wheel => wheel.steerAngle = data.maxTrunAxis * _input.steer);
-
-        Debug.Log($"speed: {_rb.linearVelocity.magnitude * 3.6f}");
     }
 
     private void Throttle(float throttlePercentage)
@@ -72,10 +67,18 @@ public class CarController : MonoBehaviour
 
         var deceleration = -speedDirection * DecelerationCalculation(speed);
         Throttle(deceleration);
+        
+        var dragForce = -_rb.linearVelocity.normalized * (data.dragCoefficient * speed * speed);
+        _rb.AddForce(dragForce, ForceMode.Force);
+        
         Brake(0);
     }
 
-    private float DecelerationCalculation(float speed) => Mathf.Clamp01(-0.9f + Mathf.Exp(speed / speedThreshold));
+    private float DecelerationCalculation(float speed)
+    {
+        var normalizedSpeed = Mathf.Clamp01(speed / data.maxSpeed);
+        return data.decelerationCurve.Evaluate(normalizedSpeed);
+    }
 
     private bool IsMovingForward() => _rb.transform.InverseTransformDirection(_rb.linearVelocity).z > 0.1f;
     private bool IsMovingBackward() => _rb.transform.InverseTransformDirection(_rb.linearVelocity).z < -0.1f;
