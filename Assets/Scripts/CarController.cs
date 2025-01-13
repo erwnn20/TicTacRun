@@ -31,30 +31,42 @@ public class CarController : MonoBehaviour
         {
             case > 0 when IsMovingForward() || !IsMoving():
             case < 0 when IsMovingBackward() || !IsMoving():
-                Throttle(_input.throttle * maxMotorTorque);
+                Throttle(_input.throttle);
                 Brake(0);
                 break;
             case > 0:
             case < 0:
                 Throttle(0);
-                Brake(Mathf.Abs(_input.throttle) * maxBrakePower);
+                Brake(Mathf.Abs(_input.throttle));
                 break;
             case 0 when IsMoving():
                 Deceleration();
                 break;
             default:
                 Throttle(0);
-                Brake(maxBrakePower * 0.001f);
+                Brake(0.001f);
                 break;
         }
 
-        if (_input.handBrake) Brake(maxBrakePower);
+        if (_input.handBrake) Brake(1);
 
-        steeringWheels.ForEach(wheel => wheel.steerAngle = maxTrunAxis * _input.steer);
+        steeringWheels.ForEach(wheel => wheel.steerAngle = data.maxTrunAxis * _input.steer);
+
+        Debug.Log($"speed: {_rb.linearVelocity.magnitude * 3.6f}");
     }
 
-    private void Throttle(float motorTorque) => throttleWheels.ForEach(wheel => wheel.motorTorque = motorTorque);
-    private void Brake(float brakePower) => brakeWheels.ForEach(wheel => wheel.brakeTorque = brakePower);
+    private void Throttle(float throttlePercentage)
+    {
+        var currentSpeed = _rb.linearVelocity.magnitude * 3.6f;
+        var speedFactor = Mathf.Clamp01(currentSpeed / data.maxSpeed);
+        var powerFactor = data.accelerationCurve.Evaluate(speedFactor);
+        var motorTorque = data.maxMotorTorque * powerFactor * throttlePercentage;
+
+        throttleWheels.ForEach(wheel => wheel.motorTorque = motorTorque);
+    }
+
+    private void Brake(float brakePercentage) =>
+        brakeWheels.ForEach(wheel => wheel.brakeTorque = data.maxBrakePower * brakePercentage);
 
     private void Deceleration()
     {
@@ -66,8 +78,7 @@ public class CarController : MonoBehaviour
         Brake(0);
     }
 
-    private float DecelerationCalculation(float speed) =>
-        maxDecelerationTorque * Mathf.Clamp01(-0.9f + Mathf.Exp(speed / speedThreshold));
+    private float DecelerationCalculation(float speed) => Mathf.Clamp01(-0.9f + Mathf.Exp(speed / speedThreshold));
 
     private bool IsMovingForward() => _rb.transform.InverseTransformDirection(_rb.linearVelocity).z > 0.1f;
     private bool IsMovingBackward() => _rb.transform.InverseTransformDirection(_rb.linearVelocity).z < -0.1f;
