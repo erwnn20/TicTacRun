@@ -334,7 +334,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   checkpointIndex: 2
   timeBonus: 10
+<<<<<<< HEAD
   checkpointManager: {fileID: 0}
+=======
+>>>>>>> feature/chrono
 --- !u!65 &291095020
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -939,7 +942,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   checkpointIndex: 1
   timeBonus: 10
+<<<<<<< HEAD
   checkpointManager: {fileID: 0}
+=======
+>>>>>>> feature/chrono
 --- !u!65 &1230032955
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1055,8 +1061,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4330e4d3667fba458ef639fb2e8287d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   nextCheckpointIndex: 0
   totalCheckpoints: 0
+=======
+>>>>>>> feature/chrono
 --- !u!114 &1709612795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1072,8 +1081,11 @@ MonoBehaviour:
   timeRemaining: 10
   timerText: {fileID: 484313241}
   tickSound: {fileID: 1709612797}
+<<<<<<< HEAD
   isGameOver: 0
   previousTime: 0
+=======
+>>>>>>> feature/chrono
 --- !u!4 &1709612796
 Transform:
   m_ObjectHideFlags: 0
@@ -1268,7 +1280,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   checkpointIndex: 0
   timeBonus: 10
+<<<<<<< HEAD
   checkpointManager: {fileID: 0}
+=======
+>>>>>>> feature/chrono
 --- !u!65 &1728365384
 BoxCollider:
   m_ObjectHideFlags: 0
