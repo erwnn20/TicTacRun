@@ -712,15 +712,19 @@ MonoBehaviour:
   camera: {fileID: 330585545}
   cameraOptions:
   - target: {fileID: 800937250}
+    key: 49
     travelTime: 1
     focusTime: 20
   - target: {fileID: 672095556}
+    key: 50
     travelTime: 1
     focusTime: 0
   - target: {fileID: 1807157159}
+    key: 51
     travelTime: 1
     focusTime: 20
   - target: {fileID: 1878921972}
+    key: 52
     travelTime: 1
     focusTime: 0
 --- !u!1 &1629858151
