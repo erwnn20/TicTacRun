@@ -8,6 +8,7 @@ public class CarController : MonoBehaviour
 {
     [SerializeField] private List<Wheel> wheels;
 
+    private List<Wheel.Object> _wheels;
     private List<Wheel.Object> _throttleWheels;
     private List<Wheel.Object> _brakeWheels;
     private List<Wheel.Object> _steeringWheels;
@@ -22,6 +23,7 @@ public class CarController : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _input = GetComponent<CarInputManager>();
 
+        _wheels = GetWheels();
         _throttleWheels = GetThrottleWheels();
         _brakeWheels = GetBrakeWheels();
         _steeringWheels = GetSteeringWheels();
@@ -53,6 +55,8 @@ public class CarController : MonoBehaviour
         if (_input.handBrake) Brake(1);
 
         Steer(_input.steer);
+
+        WheelsRotation();
     }
 
     private void Throttle(float throttlePercentage)
@@ -82,9 +86,8 @@ public class CarController : MonoBehaviour
     private void Deceleration()
     {
         var speed = _rb.linearVelocity.magnitude;
-        var speedDirection = IsMovingForward() ? 1 : IsMovingBackward() ? -1 : 0;
 
-        var deceleration = -speedDirection * DecelerationCalculation(speed);
+        var deceleration = -SpeedDirection() * DecelerationCalculation(speed);
         Throttle(deceleration);
 
         var dragForce = -_rb.linearVelocity.normalized * (data.dragCoefficient * speed * speed);
@@ -99,9 +102,23 @@ public class CarController : MonoBehaviour
         return data.decelerationCurve.Evaluate(normalizedSpeed);
     }
 
+    private void WheelsRotation()
+    {
+        var speed = _rb.linearVelocity.magnitude;
+        _wheels.ForEach(wheel =>
+        {
+            wheel.Model.Rotate(Vector3.right *
+                               (SpeedDirection() * speed / (2 * Mathf.PI * wheel.Collider.radius)));
+        });
+    }
+
     private bool IsMovingForward() => _rb.transform.InverseTransformDirection(_rb.linearVelocity).z > 0.1f;
     private bool IsMovingBackward() => _rb.transform.InverseTransformDirection(_rb.linearVelocity).z < -0.1f;
     private bool IsMoving() => IsMovingForward() || IsMovingBackward();
+    private int SpeedDirection() => IsMovingForward() ? 1 : IsMovingBackward() ? -1 : 0;
+
+    private List<Wheel.Object> GetWheels() => wheels
+        .Select(wheel => wheel.GetObject()).ToList();
 
     private List<Wheel.Object> GetThrottleWheels() => wheels
         .Where(wheel => wheel.drive)
@@ -126,7 +143,7 @@ public struct Wheel
 
     public Object GetObject() => new()
     {
-        Model = obj.GetComponent<Transform>(),
+        Model = obj.transform,
         Collider = obj.GetComponent<WheelCollider>(),
     };
 
