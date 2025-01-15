@@ -803,17 +803,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61e722685156f6345a87a25b71f53a58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  throttleWheels:
-  - {fileID: 7804597942997956553}
-  - {fileID: 8998641211535195566}
-  brakeWheels:
-  - {fileID: 7804597942997956553}
-  - {fileID: 8998641211535195566}
-  - {fileID: 6524549312040575482}
-  - {fileID: 8728995466586809977}
-  steeringWheels:
-  - {fileID: 6524549312040575482}
-  - {fileID: 8728995466586809977}
+  wheels:
+  - obj: {fileID: 7804597942997956552}
+    drive: 1
+    brake: 1
+    steering: 0
+  - obj: {fileID: 2782431399429410585}
+    drive: 1
+    brake: 1
+    steering: 0
+  - obj: {fileID: 11937762279922241}
+    drive: 0
+    brake: 1
+    steering: 1
+  - obj: {fileID: 6681441238546812171}
+    drive: 0
+    brake: 1
+    steering: 1
   data: {fileID: 11400000, guid: c407a8baf97a006428c9d4daf4af1611, type: 2}
 --- !u!114 &1629858158
 MonoBehaviour:
