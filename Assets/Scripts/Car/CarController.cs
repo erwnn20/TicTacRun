@@ -75,6 +75,7 @@ public class CarController : MonoBehaviour
         _steeringWheels.ForEach(wheel =>
         {
             wheel.Collider.steerAngle = steerAngle;
+            wheel.Model.localRotation = Quaternion.AngleAxis(steerAngle, Vector3.up);
         });
     }
 
