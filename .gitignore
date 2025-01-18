@@ -76,3 +76,5 @@ Assets/Map.meta
 ProjectSettings/SceneTemplateSettings.json
 Assets/Map/overhead.obj
 Assets/Map/overhead.obj.meta
+Assets/Scripts/CarController.cs
+Assets/Scripts/CarController.cs.meta
