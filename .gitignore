@@ -71,3 +71,10 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+Assets/Map.meta
+ProjectSettings/SceneTemplateSettings.json
+Assets/Map/overhead.obj
+Assets/Map/overhead.obj.meta
+Assets/Scripts/CarController.cs
+Assets/Scripts/CarController.cs.meta
