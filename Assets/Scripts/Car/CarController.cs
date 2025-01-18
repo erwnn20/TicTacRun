@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(CarInputManager))]
 public class CarController : MonoBehaviour
@@ -14,13 +16,16 @@ public class CarController : MonoBehaviour
     private List<Wheel.Object> _steeringWheels;
 
     [SerializeField] private CarValues data;
+    [HideInInspector] public int gearIndex;
+    [HideInInspector] public float rpm;
+    [HideInInspector] public GearState gearState;
 
-    private Rigidbody _rb;
+    [HideInInspector] public Rigidbody rb;
     private CarInputManager _input;
 
     private void Start()
     {
-        _rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
         _input = GetComponent<CarInputManager>();
 
         _wheels = GetWheels();
@@ -31,20 +36,24 @@ public class CarController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        StartCoroutine(GearsCheck(_input.throttle));
+
         switch (_input.throttle)
         {
-            case > 0 when IsMovingForward() || !IsMoving():
-            case < 0 when IsMovingBackward() || !IsMoving():
+            case > 0 when gearState != GearState.RunningReverse /*when IsMovingForward() || !IsMoving()*/:
+            case < 0 when gearState == GearState.RunningReverse /*IsMovingBackward() || !IsMoving()*/:
                 Throttle(_input.throttle);
                 Brake(0);
                 break;
-            case > 0:
-            case < 0:
+            case > 0 when gearState == GearState.RunningReverse:
+            case < 0 when gearState != GearState.RunningReverse:
                 Throttle(0);
                 Brake(Mathf.Abs(_input.throttle));
                 break;
             case 0 when IsMoving():
-                Deceleration();
+                // Deceleration();
+                Throttle(0);
+                Brake(0);
                 break;
             default:
                 Throttle(0);
@@ -59,14 +68,91 @@ public class CarController : MonoBehaviour
         WheelsRotation();
     }
 
-    private void Throttle(float throttlePercentage)
+    private IEnumerator GearsCheck(float throttlePercentage)
     {
-        var currentSpeed = _rb.linearVelocity.magnitude * 3.6f;
-        var speedFactor = Mathf.Clamp01(currentSpeed / data.maxSpeed);
-        var powerFactor = data.accelerationCurve.Evaluate(speedFactor);
-        var motorTorque = data.maxMotorTorque * powerFactor * throttlePercentage;
+        switch (gearState)
+        {
+            case GearState.Changing:
+                _input.clutch = 0;
+                break;
+            case GearState.Neutral:
+                _input.clutch = 0;
+                if (throttlePercentage > 0 && !IsMovingBackward() || IsMovingForward()) gearState = GearState.Running;
+                if (throttlePercentage < 0 && !IsMovingForward() || IsMovingBackward())
+                    gearState = GearState.RunningReverse;
+                break;
+            case GearState.Running when _input.clutch > 0.1f:
+                if (rpm > data.increaseGearRPM) StartCoroutine(ChangeGear(1));
+                if (rpm < data.decreaseGearRPM) StartCoroutine(ChangeGear(-1));
+                break;
+            case GearState.RunningReverse:
+                yield return new WaitForSeconds(data.changeGearTime);
+                if (!IsMovingBackward()) gearState = GearState.Neutral;
+                break;
+            case GearState.CheckingChange:
+            default:
+                break;
+        }
+    }
 
-        _throttleWheels.ForEach(wheel => wheel.Collider.motorTorque = motorTorque);
+    private void Throttle(float throttlePercentage) => _throttleWheels.ForEach(wheel =>
+        wheel.Collider.motorTorque = CalculateTorque(throttlePercentage) * throttlePercentage);
+
+    private float CalculateTorque(float throttlePercentage)
+    {
+        if (_input.clutch < 0.1f)
+            rpm = Mathf.Lerp(rpm,
+                Mathf.Max(data.minRPM, data.maxRPM * Mathf.Abs(throttlePercentage)) + Random.Range(-100f, 100f),
+                Time.fixedDeltaTime);
+        else
+        {
+            var wheelRpm = _throttleWheels.Sum(wheel => wheel.Collider.rpm) / _throttleWheels.Count *
+                           data.gearRatios[gearIndex] * data.differentialRatio;
+            rpm = Mathf.Lerp(rpm, Mathf.Max(data.minRPM, Mathf.Abs(wheelRpm)), Time.fixedDeltaTime * 3);
+            return data.horsePower * data.horsePowerCurve.Evaluate(rpm / data.maxRPM) / rpm *
+                   data.gearRatios[gearIndex] * data.differentialRatio * 5252 * _input.clutch;
+        }
+
+        return 0;
+    }
+
+    private IEnumerator ChangeGear(int gearChange)
+    {
+        gearState = GearState.CheckingChange;
+        if (gearIndex + gearChange >= 0)
+        {
+            switch (gearChange)
+            {
+                case > 0:
+                {
+                    yield return new WaitForSeconds(0.7f);
+                    if (rpm < data.increaseGearRPM || gearIndex >= data.gearRatios.Count - 1)
+                    {
+                        gearState = GearState.Running;
+                        yield break;
+                    }
+
+                    break;
+                }
+                case < 0:
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    if (rpm > data.decreaseGearRPM || gearIndex <= 0)
+                    {
+                        gearState = GearState.Running;
+                        yield break;
+                    }
+
+                    break;
+                }
+            }
+
+            gearState = GearState.Changing;
+            yield return new WaitForSeconds(data.changeGearTime);
+            gearIndex += gearChange;
+        }
+
+        gearState = GearState.Neutral;
     }
 
     private void Brake(float brakePercentage) =>
@@ -85,13 +171,13 @@ public class CarController : MonoBehaviour
 
     private void Deceleration()
     {
-        var speed = _rb.linearVelocity.magnitude;
+        var speed = rb.linearVelocity.magnitude;
 
         var deceleration = -SpeedDirection() * DecelerationCalculation(speed);
         Throttle(deceleration);
 
-        var dragForce = -_rb.linearVelocity.normalized * (data.dragCoefficient * speed * speed);
-        _rb.AddForce(dragForce, ForceMode.Force);
+        var dragForce = -rb.linearVelocity.normalized * (data.dragCoefficient * speed * speed);
+        rb.AddForce(dragForce, ForceMode.Force);
 
         Brake(0);
     }
@@ -104,7 +190,7 @@ public class CarController : MonoBehaviour
 
     private void WheelsRotation()
     {
-        var speed = _rb.linearVelocity.magnitude;
+        var speed = rb.linearVelocity.magnitude;
         _wheels.ForEach(wheel =>
         {
             wheel.Model.Rotate(Vector3.right *
@@ -112,8 +198,8 @@ public class CarController : MonoBehaviour
         });
     }
 
-    private bool IsMovingForward() => _rb.transform.InverseTransformDirection(_rb.linearVelocity).z > 0.1f;
-    private bool IsMovingBackward() => _rb.transform.InverseTransformDirection(_rb.linearVelocity).z < -0.1f;
+    private bool IsMovingForward() => rb.transform.InverseTransformDirection(rb.linearVelocity).z > 0.1f;
+    private bool IsMovingBackward() => rb.transform.InverseTransformDirection(rb.linearVelocity).z < -0.1f;
     private bool IsMoving() => IsMovingForward() || IsMovingBackward();
     private int SpeedDirection() => IsMovingForward() ? 1 : IsMovingBackward() ? -1 : 0;
 
@@ -152,4 +238,13 @@ public struct Wheel
         public Transform Model;
         public WheelCollider Collider;
     }
+}
+
+public enum GearState
+{
+    Neutral,
+    Running,
+    RunningReverse,
+    CheckingChange,
+    Changing,
 }
