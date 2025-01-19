@@ -146,25 +146,17 @@ public class CarController : MonoBehaviour
 
             gearState = GearState.Changing;
             yield return new WaitForSeconds(data.changeGearTime);
-            if (gearIndex + gearChange >= 0) gearIndex += gearChange;
+            if (0 <= gearIndex + gearChange && gearIndex + gearChange < data.gearRatios.Count) gearIndex += gearChange;
         }
 
         gearState = GearState.Neutral;
     }
 
     private void Brake(float brakePercentage) =>
-        data.Wheels.Brake.ForEach(wheel =>
-            wheel.Collider.brakeTorque = data.maxBrakePower * brakePercentage);
+        data.Wheels.Brake.ForEach(wheel => wheel.Collider.brakeTorque = data.maxBrakePower * brakePercentage);
 
-    private void Steer(float steerPercentage)
-    {
-        var steerAngle = data.maxTrunAxis * steerPercentage;
-        data.Wheels.Steering.ForEach(wheel =>
-        {
-            wheel.Collider.steerAngle = steerAngle;
-            wheel.Model.localRotation = Quaternion.AngleAxis(steerAngle, Vector3.up);
-        });
-    }
+    private void Steer(float steerPercentage) =>
+        data.Wheels.Steering.ForEach(wheel => wheel.Collider.steerAngle = data.maxTrunAxis * steerPercentage);
 
     private void WheelsRotation()
     {
