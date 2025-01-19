@@ -29,5 +29,6 @@ public class CarValues : ScriptableObject
     public int minRPM => (int)(maxRPM * 0.1f);
     public int increaseGearRPM => (int)(maxRPM * 0.9f) + Random.Range(-250, 50);
     public int decreaseGearRPM => (int)(maxRPM * 0.25f) + Random.Range(-50, 250);
+    public float engineBrakingFactor = 0.1f;
     public float changeGearTime = 0.5f;
 }

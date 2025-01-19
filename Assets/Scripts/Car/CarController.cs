@@ -39,26 +39,20 @@ public class CarController : MonoBehaviour
         CalculateRpm(_input.throttle);
         StartCoroutine(GearsCheck(_input.throttle));
 
+        Throttle(0);
+        Brake(0);
         switch (_input.throttle)
         {
             case > 0 when gearState != GearState.RunningReverse:
             case < 0 when gearState == GearState.RunningReverse:
                 Throttle(_input.throttle);
-                Brake(0);
                 break;
             case > 0 when gearState == GearState.RunningReverse:
             case < 0 when gearState != GearState.RunningReverse:
-                Throttle(0);
                 Brake(Mathf.Abs(_input.throttle));
                 break;
             case 0 when IsMoving():
-                // Deceleration();
-                Throttle(0);
-                Brake(0);
-                break;
-            default:
-                Throttle(0);
-                Brake(0.001f);
+                EngineBrake();
                 break;
         }
 
@@ -110,7 +104,7 @@ public class CarController : MonoBehaviour
                 Time.fixedDeltaTime);
         else
         {
-            var wheelRpm = _throttleWheels.Sum(wheel => wheel.Collider.rpm) / _throttleWheels.Count *
+            var wheelRpm = _throttleWheels.Average(wheel => wheel.Collider.rpm) *
                            data.gearRatios[gearIndex] * data.differentialRatio;
             rpm = Mathf.Lerp(rpm, Mathf.Max(data.minRPM, Mathf.Abs(wheelRpm)), Time.fixedDeltaTime * 3);
         }
@@ -120,6 +114,13 @@ public class CarController : MonoBehaviour
         ? data.horsePower * data.horsePowerCurve.Evaluate(rpm / data.maxRPM) / rpm * data.gearRatios[gearIndex] *
           data.differentialRatio * 5252 * _input.clutch
         : 0;
+
+    private void EngineBrake()
+    {
+        var engineResistance = data.engineBrakingFactor * rpm / data.maxRPM;
+        var brakingTorque = SpeedDirection() * engineResistance * data.gearRatios[gearIndex] * data.differentialRatio;
+
+        _throttleWheels.ForEach(wheel => wheel.Collider.motorTorque = brakingTorque);
     }
 
     private IEnumerator ChangeGear(int gearChange)
@@ -173,25 +174,6 @@ public class CarController : MonoBehaviour
             wheel.Collider.steerAngle = steerAngle;
             wheel.Model.localRotation = Quaternion.AngleAxis(steerAngle, Vector3.up);
         });
-    }
-
-    private void Deceleration()
-    {
-        var speed = rb.linearVelocity.magnitude;
-
-        var deceleration = -SpeedDirection() * DecelerationCalculation(speed);
-        Throttle(deceleration);
-
-        var dragForce = -rb.linearVelocity.normalized * (data.dragCoefficient * speed * speed);
-        rb.AddForce(dragForce, ForceMode.Force);
-
-        Brake(0);
-    }
-
-    private float DecelerationCalculation(float speed)
-    {
-        var normalizedSpeed = Mathf.Clamp01(speed / data.maxSpeed);
-        return data.decelerationCurve.Evaluate(normalizedSpeed);
     }
 
     private void WheelsRotation()

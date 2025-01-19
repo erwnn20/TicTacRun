@@ -161,4 +161,5 @@ MonoBehaviour:
   - 0.8
   differentialRatio: 4
   maxRPM: 8000
+  engineBrakingFactor: 0.7
   changeGearTime: 0.2
