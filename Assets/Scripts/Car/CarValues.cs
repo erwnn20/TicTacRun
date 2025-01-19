@@ -1,18 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [CreateAssetMenu(fileName = "CarValues", menuName = "Scriptable Objects/CarValues")]
 public class CarValues : ScriptableObject
 {
-    public float maxSpeed = 250f;
-    public float maxMotorTorque = 1250f;
-    public float maxBrakePower = 1000f;
-    public AnimationCurve accelerationCurve;
-    public AnimationCurve decelerationCurve;
-    public float dragCoefficient = 0.05f;
-    public float maxTrunAxis = 20f;
-
-    public float horsePower;
+    [Header("Motor")] public float horsePower;
 
     public AnimationCurve horsePowerCurve = new(
         new Keyframe(0.0f, 0.0f, 1.25f, 1.25f),
@@ -25,10 +20,59 @@ public class CarValues : ScriptableObject
 
     public List<float> gearRatios = new() { 3.8f, 2.2f, 1.5f, 1.0f, 0.8f };
     public float differentialRatio = 4;
-    [Range(4000, 15000)] public int maxRPM;
-    public int minRPM => (int)(maxRPM * 0.1f);
-    public int increaseGearRPM => (int)(maxRPM * 0.9f) + Random.Range(-250, 50);
-    public int decreaseGearRPM => (int)(maxRPM * 0.25f) + Random.Range(-50, 250);
+    [Range(4000, 15000)] public int maxRpm;
+    public int MinRpm => (int)(maxRpm * 0.1f);
+    public int IncreaseGearRpm => (int)(maxRpm * 0.9f) + Random.Range(-250, 50);
+    public int DecreaseGearRpm => (int)(maxRpm * 0.25f) + Random.Range(-50, 250);
     public float engineBrakingFactor = 0.1f;
     public float changeGearTime = 0.5f;
+
+    //
+
+    [Header("Brake")] public float maxBrakePower = 1000f;
+
+    //
+
+    [Header("Steering")] public float maxTrunAxis = 20f;
+
+    //
+
+    [Header("Wheels"), HideInInspector] public Wheels Wheels;
+}
+
+public struct Wheels
+{
+    public readonly List<Wheel.Object> List;
+    public readonly List<Wheel.Object> Throttle;
+    public readonly List<Wheel.Object> Brake;
+    public readonly List<Wheel.Object> Steering;
+
+    public Wheels(List<Wheel> wheels)
+    {
+        List = wheels.Select(wheel => wheel.GetObject()).ToList();
+        Throttle = wheels.Where(wheel => wheel.drive).Select(wheel => wheel.GetObject()).ToList();
+        Brake = wheels.Where(wheel => wheel.brake).Select(wheel => wheel.GetObject()).ToList();
+        Steering = wheels.Where(wheel => wheel.steering).Select(wheel => wheel.GetObject()).ToList();
+    }
+}
+
+[Serializable]
+public struct Wheel
+{
+    public GameObject obj;
+    public bool drive;
+    public bool brake;
+    public bool steering;
+
+    public Object GetObject() => new()
+    {
+        Model = obj.transform,
+        Collider = obj.GetComponent<WheelCollider>(),
+    };
+
+    public struct Object
+    {
+        public Transform Model;
+        public WheelCollider Collider;
+    }
 }

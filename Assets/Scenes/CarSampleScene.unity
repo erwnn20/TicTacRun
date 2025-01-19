@@ -1167,11 +1167,11 @@ MonoBehaviour:
   camera: {fileID: 330585545}
   cameraOptions:
   - target: {fileID: 800937250}
-    key: 49
+    key: 50
     travelTime: 1
     focusTime: 20
   - target: {fileID: 672095556}
-    key: 50
+    key: 49
     travelTime: 1
     focusTime: 0
   - target: {fileID: 1807157159}
@@ -1831,7 +1831,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2782431399429410585}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 36.759563, y: 10.669629, z: -0.8904877}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

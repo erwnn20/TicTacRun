@@ -11,7 +11,7 @@ public class CarInputManager : MonoBehaviour
     {
         throttle = Input.GetAxis("Vertical");
         steer = Input.GetAxis("Horizontal");
-        handBrake = Input.GetKey(KeyCode.Space);
         clutch = Input.GetKey(KeyCode.LeftShift) ? 0 : Mathf.Lerp(clutch, 1, Time.deltaTime);
+        handBrake = Input.GetKey(KeyCode.Space);
     }
 }
