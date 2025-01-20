@@ -60,7 +60,7 @@ public class CheckpointManager : MonoBehaviour
 
     private void SetGlowActive(Checkpoint checkpoint, bool isActive)
     {
-        Transform glow = checkpoint.transform.Find("Glow");
+        Transform glow = checkpoint.transform.Find("Glow3D");
         if (glow != null)
         {
             glow.gameObject.SetActive(isActive);
