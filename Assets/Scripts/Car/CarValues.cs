@@ -76,11 +76,13 @@ public struct Wheel
     {
         Model = obj.transform,
         Collider = obj.GetComponent<WheelCollider>(),
+        Renderer = obj.GetComponent<MeshRenderer>(),
     };
 
     public struct Object
     {
         public Transform Model;
         public WheelCollider Collider;
+        public MeshRenderer Renderer;
     }
 }

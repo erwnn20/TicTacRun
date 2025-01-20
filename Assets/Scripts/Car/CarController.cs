@@ -165,10 +165,10 @@ public class CarController : MonoBehaviour
 
     private void WheelsRotation()
     {
-        var speed = rb.linearVelocity.magnitude;
         data.Wheels.List.ForEach(wheel =>
         {
-            wheel.Model.Rotate(Vector3.right * (SpeedDirection() * speed / (2 * Mathf.PI * wheel.Collider.radius)));
+            wheel.Collider.GetWorldPose(out var position, out var rotation);
+            wheel.Renderer.transform.rotation = rotation;
         });
     }
 
