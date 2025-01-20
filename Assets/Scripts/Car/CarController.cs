@@ -159,8 +159,9 @@ public class CarController : MonoBehaviour
     private void Brake(float brakePercentage) =>
         data.Wheels.Brake.ForEach(wheel => wheel.Collider.brakeTorque = data.maxBrakePower * brakePercentage);
 
-    private void Steer(float steerPercentage) =>
-        data.Wheels.Steering.ForEach(wheel => wheel.Collider.steerAngle = data.maxTrunAxis * steerPercentage);
+    private void Steer(float steerPercentage) => data.Wheels.Steering.ForEach(wheel =>
+        wheel.Collider.steerAngle = data.maxTrunAxis * data.steeringCurve.Evaluate(rb.linearVelocity.magnitude) *
+                                    steerPercentage);
 
     private void WheelsRotation()
     {

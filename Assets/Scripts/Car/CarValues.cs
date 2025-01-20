@@ -35,6 +35,14 @@ public class CarValues : ScriptableObject
 
     [Header("Steering")] public float maxTrunAxis = 20f;
 
+    public AnimationCurve steeringCurve = new(
+        new Keyframe(0, 1), // À 0 km/h, braquage maximal (100%)
+        new Keyframe(20, 1), // À 20 km/h, toujours 100% du braquage
+        new Keyframe(50, 0.7f, -0.01f, -0.01f), // À 50 km/h, réduction à 70%
+        new Keyframe(100, 0.3f, -0.004f, -0.004f), // À 100 km/h, réduction à 30%
+        new Keyframe(200, 0.1f) // À 200 km/h, réduction à 10%
+    );
+
     //
 
     [Header("Wheels"), HideInInspector] public Wheels Wheels;
