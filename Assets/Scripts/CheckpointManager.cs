@@ -9,6 +9,7 @@ public class CheckpointManager : MonoBehaviour
 
     private Checkpoint[] checkpoints;
     private BoostManager boostManager;
+    private ObstacleManager obstacleManager;
 
     void Start()
     {
@@ -19,6 +20,7 @@ public class CheckpointManager : MonoBehaviour
         totalCheckpoints = checkpoints.Length;
 
         boostManager = FindObjectOfType<BoostManager>();
+        obstacleManager = FindObjectOfType<ObstacleManager>();
 
         for (int i = 0; i < checkpoints.Length; i++)
         {
@@ -27,6 +29,7 @@ public class CheckpointManager : MonoBehaviour
         }
 
         boostManager.SpawnRandomBoost();
+        obstacleManager.SpawnRandomObstacles();
     }
 
     public bool ValidateCheckpoint(int checkpointIndex)
@@ -43,6 +46,7 @@ public class CheckpointManager : MonoBehaviour
                 nextCheckpointIndex = 0;
                 currentTour++;
                 boostManager.SpawnRandomBoost();
+                obstacleManager.SpawnRandomObstacles();
             }
 
             SetGlowActive(checkpoints[nextCheckpointIndex], true);
