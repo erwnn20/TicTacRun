@@ -62,14 +62,18 @@ public class CarController : MonoBehaviour
                 break;
             case GearState.Neutral:
                 _input.clutch = 0;
-                if (throttlePercentage > 0 && !IsMovingBackward() || IsMovingForward())
+                if ((throttlePercentage > 0 && !IsMovingBackward()) || IsMovingForward())
                     gearState = GearState.Running;
-                if (throttlePercentage < 0 && !IsMovingForward() || IsMovingBackward())
+                if ((throttlePercentage < 0 && !IsMovingForward()) || IsMovingBackward())
                     gearState = GearState.RunningReverse;
                 break;
             case GearState.Running when _input.clutch > 0.1f:
                 if (rpm > data.IncreaseGearRpm) StartCoroutine(ChangeGear(1));
-                if (rpm < data.DecreaseGearRpm) StartCoroutine(ChangeGear(-1));
+                if (rpm < data.DecreaseGearRpm)
+                {
+                    if (gearIndex == 0 && IsMoving()) break;
+                    StartCoroutine(ChangeGear(-1));
+                }
                 break;
             case GearState.RunningReverse:
                 yield return new WaitForSeconds(data.changeGearTime);
