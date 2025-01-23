@@ -67,21 +67,20 @@ public struct Wheels
 [Serializable]
 public struct Wheel
 {
-    public GameObject obj;
+    public WheelCollider collider;
+    public MeshRenderer meshRenderer;
     public bool drive;
     public bool brake;
     public bool steering;
 
     public Object GetObject() => new()
     {
-        Model = obj.transform,
-        Collider = obj.GetComponent<WheelCollider>(),
-        Renderer = obj.GetComponent<MeshRenderer>(),
+        Collider = collider,
+        Renderer = meshRenderer,
     };
 
     public struct Object
     {
-        public Transform Model;
         public WheelCollider Collider;
         public MeshRenderer Renderer;
     }

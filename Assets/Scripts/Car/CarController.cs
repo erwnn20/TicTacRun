@@ -74,6 +74,7 @@ public class CarController : MonoBehaviour
                     if (gearIndex == 0 && IsMoving()) break;
                     StartCoroutine(ChangeGear(-1));
                 }
+
                 break;
             case GearState.RunningReverse:
                 yield return new WaitForSeconds(data.changeGearTime);
@@ -159,15 +160,18 @@ public class CarController : MonoBehaviour
     private void Brake(float brakePercentage) =>
         data.Wheels.Brake.ForEach(wheel => wheel.Collider.brakeTorque = data.maxBrakePower * brakePercentage);
 
-    private void Steer(float steerPercentage) => data.Wheels.Steering.ForEach(wheel =>
-        wheel.Collider.steerAngle = data.maxTrunAxis * data.steeringCurve.Evaluate(rb.linearVelocity.magnitude) *
-                                    steerPercentage);
+    private void Steer(float steerPercentage) => data.Wheels.Steering.ForEach(
+        wheel =>
+            wheel.Collider.steerAngle =
+                data.maxTrunAxis * data.steeringCurve.Evaluate(rb.linearVelocity.magnitude) * steerPercentage
+    );
 
     private void WheelsRotation()
     {
         data.Wheels.List.ForEach(wheel =>
         {
             wheel.Collider.GetWorldPose(out var position, out var rotation);
+            wheel.Renderer.transform.position = position;
             wheel.Renderer.transform.rotation = rotation;
         });
     }
