@@ -16,6 +16,10 @@ public class CarController : MonoBehaviour
     [HideInInspector] public Rigidbody rb;
     private CarInputManager _input;
 
+    private float _rpmVelocity;
+    private bool _isRevLimiterActive;
+    private float _revLimiterCooldown;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -74,6 +78,7 @@ public class CarController : MonoBehaviour
                     if (gearIndex == 0 && IsMoving()) break;
                     StartCoroutine(ChangeGear(-1));
                 }
+
                 break;
             case GearState.RunningReverse:
                 yield return new WaitForSeconds(data.changeGearTime);
@@ -92,16 +97,38 @@ public class CarController : MonoBehaviour
 
     private void CalculateRpm(float throttlePercentage)
     {
+        float targetRpm, smoothTime;
+        var revLimiterThreshold = data.maxRpm;
+        var revLimiterResetThreshold = data.maxRpm * 0.975f;
+
         if (_input.clutch < 0.1f)
-            rpm = Mathf.Lerp(rpm,
-                Mathf.Max(data.MinRpm, data.maxRpm * Mathf.Abs(throttlePercentage)) + Random.Range(-100f, 100f),
-                Time.fixedDeltaTime);
+        {
+            targetRpm = Mathf.Max(data.MinRpm, data.maxRpm * Mathf.Abs(throttlePercentage)) + Random.Range(-100f, 100f);
+            smoothTime = 0.25f;
+        }
         else
         {
             var wheelRpm = data.Wheels.Throttle.Average(wheel => wheel.Collider.rpm) *
                            data.gearRatios[gearIndex] * data.differentialRatio;
-            rpm = Mathf.Lerp(rpm, Mathf.Max(data.MinRpm, Mathf.Abs(wheelRpm)), Time.fixedDeltaTime * 3);
+            targetRpm = Mathf.Max(data.MinRpm, Mathf.Abs(wheelRpm));
+            if (Mathf.Abs(throttlePercentage) < 0.1f) targetRpm *= 0.98f;
+            smoothTime = 0.15f;
         }
+
+        if (rpm >= revLimiterThreshold && !_isRevLimiterActive)
+        {
+            _isRevLimiterActive = true;
+            _revLimiterCooldown = 0.2f;
+        }
+
+        if (_isRevLimiterActive)
+        {
+            _revLimiterCooldown -= Time.fixedDeltaTime;
+            targetRpm = data.maxRpm * 0.9f + Random.Range(-50f, 50f);
+            if (_revLimiterCooldown <= 0 && rpm < revLimiterResetThreshold) _isRevLimiterActive = false;
+        }
+
+        rpm = Mathf.SmoothDamp(rpm, targetRpm, ref _rpmVelocity, smoothTime);
     }
 
     private float CalculateTorque() => _input.clutch > 0.1f
@@ -176,7 +203,7 @@ public class CarController : MonoBehaviour
     private bool IsMovingBackward() => rb.transform.InverseTransformDirection(rb.linearVelocity).z < -0.1f;
     private bool IsMoving() => IsMovingForward() || IsMovingBackward();
     private int SpeedDirection() => IsMovingForward() ? 1 : IsMovingBackward() ? -1 : 0;
-    
+
     public float RpmRatio => rpm / data.maxRpm;
 }
 
