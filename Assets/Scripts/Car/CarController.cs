@@ -139,7 +139,7 @@ public class CarController : MonoBehaviour
     private void EngineBrake()
     {
         var engineResistance = data.engineBrakingFactor * rpm / data.maxRpm;
-        var brakingTorque = SpeedDirection() * engineResistance * data.gearRatios[gearIndex] * data.differentialRatio;
+        var brakingTorque = -SpeedDirection() * engineResistance * data.gearRatios[gearIndex] * data.differentialRatio;
 
         data.Wheels.Throttle.ForEach(wheel => wheel.Collider.motorTorque = brakingTorque);
     }
