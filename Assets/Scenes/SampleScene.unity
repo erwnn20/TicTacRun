@@ -710,6 +710,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4330e4d3667fba458ef639fb2e8287d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  checkpointCounterText: {fileID: 1110290136}
 --- !u!4 &792102288
 Transform:
   m_ObjectHideFlags: 0
@@ -768,6 +769,18 @@ PrefabInstance:
     - target: {fileID: 1506349218467432149, guid: 46bf8fb93f8a1104eb74b29dc62221f9, type: 3}
       propertyPath: m_Name
       value: Canvas_Temp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3680507411080022179, guid: 46bf8fb93f8a1104eb74b29dc62221f9, type: 3}
+      propertyPath: m_text
+      value: 'Goal(s): 0'
+      objectReference: {fileID: 0}
+    - target: {fileID: 3680507411080022179, guid: 46bf8fb93f8a1104eb74b29dc62221f9, type: 3}
+      propertyPath: m_fontSize
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3680507411080022179, guid: 46bf8fb93f8a1104eb74b29dc62221f9, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 4766375728833837141, guid: 46bf8fb93f8a1104eb74b29dc62221f9, type: 3}
       propertyPath: m_Pivot.x
@@ -903,6 +916,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1110290136 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3680507411080022179, guid: 46bf8fb93f8a1104eb74b29dc62221f9, type: 3}
+  m_PrefabInstance: {fileID: 799766978}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1141421297 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1409218935260300094, guid: aab918fc1535cc04c8a8892c6f0e3f7b, type: 3}
