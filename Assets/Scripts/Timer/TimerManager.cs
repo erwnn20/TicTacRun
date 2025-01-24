@@ -10,8 +10,10 @@ public class TimerManager : MonoBehaviour
     public AudioSource timeAddedSound;
     public GameObject timeAddedVisual;
     public CanvasGroup timeAddedCanvasGroup;
+    public float countdownDuration = 3f;
 
     private bool isGameOver = false;
+    private bool isCountdownActive = false;
     private float previousTime;
 
     void Start()
@@ -25,11 +27,13 @@ public class TimerManager : MonoBehaviour
         {
             timeAddedCanvasGroup.alpha = 0f;
         }
+
+        StartCoroutine(Countdown());
     }
 
     void Update()
     {
-        if (!isGameOver)
+        if (!isGameOver && !isCountdownActive)
         {
             timeRemaining -= Time.deltaTime;
 
@@ -145,5 +149,26 @@ public class TimerManager : MonoBehaviour
         }
 
         timeAddedVisual.SetActive(false);
+    }
+
+    private IEnumerator Countdown()
+    {
+        isCountdownActive = true;
+        InputBlocker.isCountdownActive = true;
+        float countdownTime = countdownDuration;
+
+        while (countdownTime > 0)
+        {
+            timerText.text = $"{Mathf.Ceil(countdownTime)}";
+            yield return new WaitForSeconds(1f);
+            countdownTime -= 1f;
+        }
+
+        timerText.text = "Go!";
+        yield return new WaitForSeconds(1f);
+
+        isCountdownActive = false;
+        InputBlocker.isCountdownActive = false;
+        timerText.text = $"{timeRemaining:F1}";
     }
 }
