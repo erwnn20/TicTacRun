@@ -98,8 +98,8 @@ public class CarController : MonoBehaviour
     private void CalculateRpm(float throttlePercentage)
     {
         float targetRpm, smoothTime;
-        var revLimiterThreshold = data.maxRpm;
-        var revLimiterResetThreshold = data.maxRpm * 0.975f;
+        var revLimiterThreshold = data.maxRpm * 0.975f;
+        var revLimiterResetThreshold = data.maxRpm * 0.95f;
 
         if (_input.clutch < 0.1f)
         {

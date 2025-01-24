@@ -11,18 +11,18 @@ public class CarValues : ScriptableObject
 
     public AnimationCurve horsePowerCurve = new(
         new Keyframe(0.0f, 0.0f, 1.25f, 1.25f),
-        new Keyframe(0.725f, 0.9f, 0.97f, 0.97f),
-        new Keyframe(0.8f, 0.965f, 0.6f, 0.6f),
-        new Keyframe(0.9f, 1.0f, -0.065f, -0.065f),
-        new Keyframe(0.95f, 0.85f, -3.555f, -3.555f),
-        new Keyframe(1.0f, 0.0f, 0.0f, 0.0f)
+        new Keyframe(0.625f, 0.9f, 0.97f, 0.97f),
+        new Keyframe(0.7f, 0.965f, 0.6f, 0.6f),
+        new Keyframe(0.8f, 1.0f, -0.065f, -0.065f),
+        new Keyframe(0.85f, 0.85f, -6.5f, -6.5f),
+        new Keyframe(0.9f, 0.0f, 0.0f, 0.0f)
     );
 
     public List<float> gearRatios = new() { 3.8f, 2.2f, 1.5f, 1.0f, 0.8f };
     public float differentialRatio = 4;
     [Range(4000, 15000)] public int maxRpm;
     public int MinRpm => (int)(maxRpm * 0.1f);
-    public int IncreaseGearRpm => (int)(maxRpm * 0.9f) + Random.Range(-250, 50);
+    public int IncreaseGearRpm => (int)(maxRpm * 0.875f) + Random.Range(-250, 50);
     public int DecreaseGearRpm => (int)(maxRpm * 0.25f) + Random.Range(-50, 250);
     public float engineBrakingFactor = 0.1f;
     public float changeGearTime = 0.5f;
