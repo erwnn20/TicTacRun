@@ -176,6 +176,8 @@ public class CarController : MonoBehaviour
     private bool IsMovingBackward() => rb.transform.InverseTransformDirection(rb.linearVelocity).z < -0.1f;
     private bool IsMoving() => IsMovingForward() || IsMovingBackward();
     private int SpeedDirection() => IsMovingForward() ? 1 : IsMovingBackward() ? -1 : 0;
+    
+    public float RpmRatio => rpm / data.maxRpm;
 }
 
 public enum GearState
