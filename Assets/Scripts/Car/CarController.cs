@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 public class CarController : MonoBehaviour
 {
     [SerializeField] private List<Wheel> wheels;
-    [SerializeField] private CarValues data;
+    public CarValues data;
 
     [HideInInspector] public int gearIndex;
     [HideInInspector] public float rpm;
