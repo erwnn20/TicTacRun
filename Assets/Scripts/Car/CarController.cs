@@ -99,20 +99,20 @@ public class CarController : MonoBehaviour
     private void CalculateRpm(float throttlePercentage)
     {
         float targetRpm, smoothTime;
-        var revLimiterThreshold = data.maxRpm * 0.975f;
+        var revLimiterThreshold = data.maxRpm * 1.05f;
         var revLimiterResetThreshold = data.maxRpm * 0.95f;
 
         if (_input.clutch < 0.1f)
         {
             targetRpm = Mathf.Max(data.MinRpm, data.maxRpm * Mathf.Abs(throttlePercentage)) + Random.Range(-100f, 100f);
-            smoothTime = 0.25f;
+            smoothTime = 0.5f;
         }
         else
         {
             var wheelRpm = wheels.Throttle().Average(wheel => wheel.collider.rpm) * data.gearRatios[gearIndex] * data.differentialRatio;
             targetRpm = Mathf.Max(data.MinRpm, Mathf.Abs(wheelRpm));
             if (Mathf.Abs(throttlePercentage) < 0.1f) targetRpm *= 0.98f;
-            smoothTime = 0.15f;
+            smoothTime = 0.45f;
         }
 
         if (rpm >= revLimiterThreshold && !_isRevLimiterActive)
@@ -124,11 +124,11 @@ public class CarController : MonoBehaviour
         if (_isRevLimiterActive)
         {
             _revLimiterCooldown -= Time.fixedDeltaTime;
-            targetRpm = data.maxRpm * 0.9f + Random.Range(-50f, 50f);
+            targetRpm = data.maxRpm * 0.95f + Random.Range(-50f, 50f);
             if (_revLimiterCooldown <= 0 && rpm < revLimiterResetThreshold) _isRevLimiterActive = false;
         }
 
-        rpm = Mathf.SmoothDamp(rpm, targetRpm, ref _rpmVelocity, smoothTime);
+        rpm = Mathf.SmoothDamp(rpm, Mathf.Min(targetRpm, data.maxRpm * 1.1f), ref _rpmVelocity, smoothTime);
     }
 
     private float CalculateTorque() => _input.clutch > 0.1f
