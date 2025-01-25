@@ -706,7 +706,7 @@ PrefabInstance:
       objectReference: {fileID: 721430037}
     - target: {fileID: 8434657558184076797, guid: a494fc7bf8b837649b59ffa5c3357d84, type: 3}
       propertyPath: needle.maxAngle
-      value: -230
+      value: -255
       objectReference: {fileID: 0}
     - target: {fileID: 8434657558184076797, guid: a494fc7bf8b837649b59ffa5c3357d84, type: 3}
       propertyPath: needle.transform

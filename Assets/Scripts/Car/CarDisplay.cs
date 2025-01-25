@@ -13,7 +13,7 @@ public class CarDisplay : MonoBehaviour
 
     private void Update()
     {
-        needle.transform.rotation = Quaternion.Euler(0, 0, Mathf.Lerp(needle.minAngle, needle.maxAngle, car.rpm / car.data.maxRpm));
+        needle.transform.rotation = Quaternion.Euler(0, 0, Mathf.LerpUnclamped(needle.minAngle, needle.maxAngle, car.RpmRatio));
         speed.text = $"{Mathf.RoundToInt(car.rb.linearVelocity.magnitude * 3.6f)}";
         gear.text =
             $"{car.gearState switch { GearState.Neutral => "N", GearState.RunningReverse => "R", _ => car.gearIndex + 1 }}";
