@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!224 &88059237 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6169392384009231023, guid: aab918fc1535cc04c8a8892c6f0e3f7b, type: 3}
+  m_PrefabInstance: {fileID: 7966533587521585364}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -699,6 +704,14 @@ PrefabInstance:
       propertyPath: speed
       value: 
       objectReference: {fileID: 721430037}
+    - target: {fileID: 8434657558184076797, guid: a494fc7bf8b837649b59ffa5c3357d84, type: 3}
+      propertyPath: needle.maxAngle
+      value: -230
+      objectReference: {fileID: 0}
+    - target: {fileID: 8434657558184076797, guid: a494fc7bf8b837649b59ffa5c3357d84, type: 3}
+      propertyPath: needle.transform
+      value: 
+      objectReference: {fileID: 88059237}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
