@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,8 +25,6 @@ public class CarController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         _input = GetComponent<CarInputManager>();
-
-        data.Wheels = new Wheels(wheels);
     }
 
     private void FixedUpdate()
@@ -92,8 +91,10 @@ public class CarController : MonoBehaviour
         if (!IsMovingForward() && gearIndex > 0) StartCoroutine(ChangeGear(-1));
     }
 
-    private void Throttle(float throttlePercentage) => data.Wheels.Throttle.ForEach(wheel =>
-        wheel.Collider.motorTorque = CalculateTorque() * throttlePercentage);
+    private void Throttle(float throttlePercentage) => wheels.Throttle().ForEach(
+        wheel =>
+            wheel.collider.motorTorque = CalculateTorque() * throttlePercentage
+    );
 
     private void CalculateRpm(float throttlePercentage)
     {
@@ -108,8 +109,7 @@ public class CarController : MonoBehaviour
         }
         else
         {
-            var wheelRpm = data.Wheels.Throttle.Average(wheel => wheel.Collider.rpm) *
-                           data.gearRatios[gearIndex] * data.differentialRatio;
+            var wheelRpm = wheels.Throttle().Average(wheel => wheel.collider.rpm) * data.gearRatios[gearIndex] * data.differentialRatio;
             targetRpm = Mathf.Max(data.MinRpm, Mathf.Abs(wheelRpm));
             if (Mathf.Abs(throttlePercentage) < 0.1f) targetRpm *= 0.98f;
             smoothTime = 0.15f;
@@ -141,7 +141,7 @@ public class CarController : MonoBehaviour
         var engineResistance = data.engineBrakingFactor * rpm / data.maxRpm;
         var brakingTorque = -SpeedDirection() * engineResistance * data.gearRatios[gearIndex] * data.differentialRatio;
 
-        data.Wheels.Throttle.ForEach(wheel => wheel.Collider.motorTorque = brakingTorque);
+        wheels.Throttle().ForEach(wheel => wheel.collider.motorTorque = brakingTorque);
     }
 
     private IEnumerator ChangeGear(int gearChange)
@@ -184,18 +184,21 @@ public class CarController : MonoBehaviour
     }
 
     private void Brake(float brakePercentage) =>
-        data.Wheels.Brake.ForEach(wheel => wheel.Collider.brakeTorque = data.maxBrakePower * brakePercentage);
+        wheels.Brake().ForEach(wheel => wheel.collider.brakeTorque = data.maxBrakePower * brakePercentage);
 
-    private void Steer(float steerPercentage) => data.Wheels.Steering.ForEach(wheel =>
-        wheel.Collider.steerAngle = data.maxTrunAxis * data.steeringCurve.Evaluate(rb.linearVelocity.magnitude) *
-                                    steerPercentage);
+    private void Steer(float steerPercentage) => wheels.Steering().ForEach(
+        wheel =>
+            wheel.collider.steerAngle =
+                data.maxTrunAxis * data.steeringCurve.Evaluate(rb.linearVelocity.magnitude) * steerPercentage
+    );
 
     private void WheelsRotation()
     {
-        data.Wheels.List.ForEach(wheel =>
+        wheels.ForEach(wheel =>
         {
-            wheel.Collider.GetWorldPose(out var position, out var rotation);
-            wheel.Renderer.transform.rotation = rotation;
+            wheel.collider.GetWorldPose(out var position, out var rotation);
+            wheel.meshRenderer.transform.position = position;
+            wheel.meshRenderer.transform.rotation = rotation;
         });
     }
 
@@ -214,4 +217,21 @@ public enum GearState
     RunningReverse,
     CheckingChange,
     Changing,
+}
+
+[Serializable]
+public struct Wheel
+{
+    public WheelCollider collider;
+    public MeshRenderer meshRenderer;
+    public bool drive;
+    public bool brake;
+    public bool steering;
+}
+
+public static class WheelLists
+{
+    public static List<Wheel> Throttle(this List<Wheel> wheels) => wheels.Where(w => w.drive).ToList();
+    public static List<Wheel> Brake(this List<Wheel> wheels) => wheels.Where(w => w.brake).ToList();
+    public static List<Wheel> Steering(this List<Wheel> wheels) => wheels.Where(w => w.steering).ToList();
 }

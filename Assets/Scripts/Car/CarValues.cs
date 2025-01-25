@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -42,47 +40,4 @@ public class CarValues : ScriptableObject
         new Keyframe(100, 0.3f, -0.004f, -0.004f), // À 100 km/h, réduction à 30%
         new Keyframe(200, 0.1f) // À 200 km/h, réduction à 10%
     );
-
-    //
-
-    [Header("Wheels"), HideInInspector] public Wheels Wheels;
-}
-
-public struct Wheels
-{
-    public readonly List<Wheel.Object> List;
-    public readonly List<Wheel.Object> Throttle;
-    public readonly List<Wheel.Object> Brake;
-    public readonly List<Wheel.Object> Steering;
-
-    public Wheels(List<Wheel> wheels)
-    {
-        List = wheels.Select(wheel => wheel.GetObject()).ToList();
-        Throttle = wheels.Where(wheel => wheel.drive).Select(wheel => wheel.GetObject()).ToList();
-        Brake = wheels.Where(wheel => wheel.brake).Select(wheel => wheel.GetObject()).ToList();
-        Steering = wheels.Where(wheel => wheel.steering).Select(wheel => wheel.GetObject()).ToList();
-    }
-}
-
-[Serializable]
-public struct Wheel
-{
-    public GameObject obj;
-    public bool drive;
-    public bool brake;
-    public bool steering;
-
-    public Object GetObject() => new()
-    {
-        Model = obj.transform,
-        Collider = obj.GetComponent<WheelCollider>(),
-        Renderer = obj.GetComponent<MeshRenderer>(),
-    };
-
-    public struct Object
-    {
-        public Transform Model;
-        public WheelCollider Collider;
-        public MeshRenderer Renderer;
-    }
 }
