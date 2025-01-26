@@ -27,7 +27,7 @@ L'objectif : Parcourir la plus grande distance avant que le chrono ne s'écoule.
    cd TicTacRun
    ```
 2. Ouvrez le projet avec Unity (version 6 ou ultérieure).
-3. Lancez le jeu depuis l'éditeur ou générez un exécutable.
+3. Lancez le jeu depuis la scène Asset/Scenes/Menu dans l'éditeur ou générez un exécutable.
 
 ## 🛠 Architecture du projet
 - **Scripts** : Gestion des véhicules, checkpoints, chronomètre et logique globale.
