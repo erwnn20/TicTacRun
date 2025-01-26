@@ -127,6 +127,7 @@ public class TimerManager : MonoBehaviour
     private void GameOver()
     {
         isGameOver = true;
+        MenuControler.ChangeScenePlay("Restart");
         Debug.Log("Game Over!");
     }
 

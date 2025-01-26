@@ -9,21 +9,23 @@ public class MenuControler : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    { }
+    {
+    }
 
     // Update is called once per frame
     void Update()
-    { }
-    
+    {
+    }
+
     /// <summary>
     /// Loads a new scene based on the specified name.
     /// </summary>
     /// <param name="sceneName">Name of the scene to load.</param>
-    public void ChangeScenePlay(string sceneName)
+    public static void ChangeScenePlay(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
     }
-    
+
     /// <summary>
     /// Exits the application.
     /// </summary>
@@ -31,11 +33,4 @@ public class MenuControler : MonoBehaviour
     {
         Application.Quit();
     }
-    
-    
-    
-    
-    
-    
-    
 }
