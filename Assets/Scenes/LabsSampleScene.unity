@@ -1385,6 +1385,7 @@ MonoBehaviour:
   timeAddedSound: {fileID: 1817546279}
   timeAddedVisual: {fileID: 2016758910}
   timeAddedCanvasGroup: {fileID: 2016758914}
+  countdownDuration: 3
 --- !u!114 &1817546277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1397,6 +1398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4330e4d3667fba458ef639fb2e8287d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  checkpointCounterText: {fileID: 0}
 --- !u!4 &1817546278
 Transform:
   m_ObjectHideFlags: 0
@@ -1622,7 +1624,7 @@ MonoBehaviour:
   - {fileID: 908956522}
   - {fileID: 343647637}
   - {fileID: 1759193247}
-  obstaclePrefab: {fileID: 3097053885764166086, guid: ec5d66e15db10604a9f8f3d2d3a0a717, type: 3}
+  obstaclePrefab: {fileID: 1524411113276028, guid: e2aafa8770d34a9591b41bedf4e318ba, type: 3}
 --- !u!114 &1817546282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1639,8 +1641,7 @@ MonoBehaviour:
   - {fileID: 510152375}
   - {fileID: 1136331119}
   - {fileID: 1409277219}
-  boostPrefab: {fileID: 3152496804782000114, guid: 8e19d3e1c45ac7249986af4a33ad60f7, type: 3}
-  boostDuration: 10
+  boostPrefab: {fileID: 1931298151966786, guid: 928a1377c1cd4515b208fef3a396b8ea, type: 3}
 --- !u!1 &1937327493
 GameObject:
   m_ObjectHideFlags: 0
