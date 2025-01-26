@@ -4,7 +4,6 @@ public class BoostManager : MonoBehaviour
 {
     public Transform[] boostPositions;
     public GameObject boostPrefab;
-    public float boostDuration = 10f;
 
     private GameObject currentBoost;
 
@@ -25,7 +24,6 @@ public class BoostManager : MonoBehaviour
             int randomIndex = Random.Range(0, boostPositions.Length);
             Vector3 randomPosition = boostPositions[randomIndex].position;
             currentBoost = Instantiate(boostPrefab, randomPosition, Quaternion.identity);
-            Destroy(currentBoost, boostDuration);
         }
     }
 
