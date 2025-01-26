@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,14 @@ public class CarController : MonoBehaviour
     [HideInInspector] public Rigidbody rb;
     private CarInputManager _input;
 
+    private float _rpmVelocity;
+    private bool _isRevLimiterActive;
+    private float _revLimiterCooldown;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         _input = GetComponent<CarInputManager>();
-
-        data.Wheels = new Wheels(wheels);
     }
 
     private void FixedUpdate()
@@ -74,6 +77,7 @@ public class CarController : MonoBehaviour
                     if (gearIndex == 0 && IsMoving()) break;
                     StartCoroutine(ChangeGear(-1));
                 }
+
                 break;
             case GearState.RunningReverse:
                 yield return new WaitForSeconds(data.changeGearTime);
@@ -87,21 +91,44 @@ public class CarController : MonoBehaviour
         if (!IsMovingForward() && gearIndex > 0) StartCoroutine(ChangeGear(-1));
     }
 
-    private void Throttle(float throttlePercentage) => data.Wheels.Throttle.ForEach(wheel =>
-        wheel.Collider.motorTorque = CalculateTorque() * throttlePercentage);
+    private void Throttle(float throttlePercentage) => wheels.Throttle().ForEach(
+        wheel =>
+            wheel.collider.motorTorque = CalculateTorque() * throttlePercentage
+    );
 
     private void CalculateRpm(float throttlePercentage)
     {
+        float targetRpm, smoothTime;
+        var revLimiterThreshold = data.maxRpm * 1.05f;
+        var revLimiterResetThreshold = data.maxRpm * 0.95f;
+
         if (_input.clutch < 0.1f)
-            rpm = Mathf.Lerp(rpm,
-                Mathf.Max(data.MinRpm, data.maxRpm * Mathf.Abs(throttlePercentage)) + Random.Range(-100f, 100f),
-                Time.fixedDeltaTime);
+        {
+            targetRpm = Mathf.Max(data.MinRpm, data.maxRpm * Mathf.Abs(throttlePercentage)) + Random.Range(-100f, 100f);
+            smoothTime = 0.5f;
+        }
         else
         {
-            var wheelRpm = data.Wheels.Throttle.Average(wheel => wheel.Collider.rpm) *
-                           data.gearRatios[gearIndex] * data.differentialRatio;
-            rpm = Mathf.Lerp(rpm, Mathf.Max(data.MinRpm, Mathf.Abs(wheelRpm)), Time.fixedDeltaTime * 3);
+            var wheelRpm = wheels.Throttle().Average(wheel => wheel.collider.rpm) * data.gearRatios[gearIndex] * data.differentialRatio;
+            targetRpm = Mathf.Max(data.MinRpm, Mathf.Abs(wheelRpm));
+            if (Mathf.Abs(throttlePercentage) < 0.1f) targetRpm *= 0.98f;
+            smoothTime = 0.45f;
         }
+
+        if (rpm >= revLimiterThreshold && !_isRevLimiterActive)
+        {
+            _isRevLimiterActive = true;
+            _revLimiterCooldown = 0.2f;
+        }
+
+        if (_isRevLimiterActive)
+        {
+            _revLimiterCooldown -= Time.fixedDeltaTime;
+            targetRpm = data.maxRpm * 0.95f + Random.Range(-50f, 50f);
+            if (_revLimiterCooldown <= 0 && rpm < revLimiterResetThreshold) _isRevLimiterActive = false;
+        }
+
+        rpm = Mathf.SmoothDamp(rpm, Mathf.Min(targetRpm, data.maxRpm * 1.1f), ref _rpmVelocity, smoothTime);
     }
 
     private float CalculateTorque() => _input.clutch > 0.1f
@@ -112,9 +139,9 @@ public class CarController : MonoBehaviour
     private void EngineBrake()
     {
         var engineResistance = data.engineBrakingFactor * rpm / data.maxRpm;
-        var brakingTorque = SpeedDirection() * engineResistance * data.gearRatios[gearIndex] * data.differentialRatio;
+        var brakingTorque = -SpeedDirection() * engineResistance * data.gearRatios[gearIndex] * data.differentialRatio;
 
-        data.Wheels.Throttle.ForEach(wheel => wheel.Collider.motorTorque = brakingTorque);
+        wheels.Throttle().ForEach(wheel => wheel.collider.motorTorque = brakingTorque);
     }
 
     private IEnumerator ChangeGear(int gearChange)
@@ -157,18 +184,21 @@ public class CarController : MonoBehaviour
     }
 
     private void Brake(float brakePercentage) =>
-        data.Wheels.Brake.ForEach(wheel => wheel.Collider.brakeTorque = data.maxBrakePower * brakePercentage);
+        wheels.Brake().ForEach(wheel => wheel.collider.brakeTorque = data.maxBrakePower * brakePercentage);
 
-    private void Steer(float steerPercentage) => data.Wheels.Steering.ForEach(wheel =>
-        wheel.Collider.steerAngle = data.maxTrunAxis * data.steeringCurve.Evaluate(rb.linearVelocity.magnitude) *
-                                    steerPercentage);
+    private void Steer(float steerPercentage) => wheels.Steering().ForEach(
+        wheel =>
+            wheel.collider.steerAngle =
+                data.maxTrunAxis * data.steeringCurve.Evaluate(rb.linearVelocity.magnitude) * steerPercentage
+    );
 
     private void WheelsRotation()
     {
-        data.Wheels.List.ForEach(wheel =>
+        wheels.ForEach(wheel =>
         {
-            wheel.Collider.GetWorldPose(out var position, out var rotation);
-            wheel.Renderer.transform.rotation = rotation;
+            wheel.collider.GetWorldPose(out var position, out var rotation);
+            wheel.meshRenderer.transform.position = position;
+            wheel.meshRenderer.transform.rotation = rotation;
         });
     }
 
@@ -176,6 +206,8 @@ public class CarController : MonoBehaviour
     private bool IsMovingBackward() => rb.transform.InverseTransformDirection(rb.linearVelocity).z < -0.1f;
     private bool IsMoving() => IsMovingForward() || IsMovingBackward();
     private int SpeedDirection() => IsMovingForward() ? 1 : IsMovingBackward() ? -1 : 0;
+
+    public float RpmRatio => rpm / data.maxRpm;
 }
 
 public enum GearState
@@ -185,4 +217,21 @@ public enum GearState
     RunningReverse,
     CheckingChange,
     Changing,
+}
+
+[Serializable]
+public struct Wheel
+{
+    public WheelCollider collider;
+    public MeshRenderer meshRenderer;
+    public bool drive;
+    public bool brake;
+    public bool steering;
+}
+
+public static class WheelLists
+{
+    public static List<Wheel> Throttle(this List<Wheel> wheels) => wheels.Where(w => w.drive).ToList();
+    public static List<Wheel> Brake(this List<Wheel> wheels) => wheels.Where(w => w.brake).ToList();
+    public static List<Wheel> Steering(this List<Wheel> wheels) => wheels.Where(w => w.steering).ToList();
 }
