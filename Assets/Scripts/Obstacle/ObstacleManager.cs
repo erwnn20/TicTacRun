@@ -1,17 +1,38 @@
 using UnityEngine;
 
+/// <summary>
+/// Manages the spawning of obstacles at random positions in the game.
+/// Handles spawning obstacles and ensuring that the obstacles are placed correctly.
+/// </summary>
 public class ObstacleManager : MonoBehaviour
 {
+    /// <summary>
+    /// An array of positions where obstacles can be spawned.
+    /// </summary>
     public Transform[] obstaclePositions;
+
+    /// <summary>
+    /// The obstacle prefab to be spawned.
+    /// </summary>
     public GameObject obstaclePrefab;
 
+    /// <summary>
+    /// An array to hold the currently spawned obstacles.
+    /// </summary>
     private GameObject[] currentObstacles;
 
+    /// <summary>
+    /// Called when the script is initialized. It spawns random obstacles at the start.
+    /// </summary>
     void Start()
     {
         SpawnRandomObstacles();
     }
 
+    /// <summary>
+    /// Spawns two obstacles at random positions from the available obstacle positions.
+    /// If obstacles already exist, they are destroyed before spawning new ones.
+    /// </summary>
     public void SpawnRandomObstacles()
     {
         if (currentObstacles != null)
