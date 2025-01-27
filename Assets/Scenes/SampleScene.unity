@@ -1854,6 +1854,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Circuit
       objectReference: {fileID: 0}
+    - target: {fileID: 2517292403815743685, guid: dc9e6606fa359bd44bd9115296cb19c1, type: 3}
+      propertyPath: checkpointIndex
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2684462310427528764, guid: dc9e6606fa359bd44bd9115296cb19c1, type: 3}
+      propertyPath: checkpointIndex
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3214873116820084473, guid: dc9e6606fa359bd44bd9115296cb19c1, type: 3}
+      propertyPath: checkpointIndex
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5089894745821572162, guid: dc9e6606fa359bd44bd9115296cb19c1, type: 3}
+      propertyPath: checkpointIndex
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196833832472811774, guid: dc9e6606fa359bd44bd9115296cb19c1, type: 3}
+      propertyPath: checkpointIndex
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7308249202387437425, guid: dc9e6606fa359bd44bd9115296cb19c1, type: 3}
       propertyPath: m_Convex
       value: 1
@@ -1861,6 +1881,14 @@ PrefabInstance:
     - target: {fileID: 7308249202387437425, guid: dc9e6606fa359bd44bd9115296cb19c1, type: 3}
       propertyPath: m_IsTrigger
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8033806585859485632, guid: dc9e6606fa359bd44bd9115296cb19c1, type: 3}
+      propertyPath: checkpointIndex
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8545870651558750412, guid: dc9e6606fa359bd44bd9115296cb19c1, type: 3}
+      propertyPath: checkpointIndex
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
